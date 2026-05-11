@@ -1,4 +1,13 @@
 services:
+
+  frontend:
+    build: ./frontend
+    container_name: ubb_frontend
+    ports:
+      - "3000:80"
+    networks:
+      - ubb_net
+    restart: unless-stopped
   app:
     build: ./backend
     container_name: ubb_app
