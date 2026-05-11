@@ -1,0 +1,14 @@
+{
+  "name": "ubb/perfeccionamiento-academico",
+  "description": "Módulo de Perfeccionamiento Académico Universidad del Bío-Bío",
+  "type": "project",
+  "require": {
+    "php": ">=8.3",
+    "smarty/smarty": "^5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "UBB\\": "app/"
+    }
+  }
+}

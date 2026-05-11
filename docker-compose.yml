@@ -1,0 +1,54 @@
+services:
+  app:
+    build: ./backend
+    container_name: ubb_app
+    ports:
+      - "${APP_PORT:-8080}:80"
+    # volumes:
+    #   - ./backend/src:/var/www/html
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-1433}
+      DB_NAME: ${DB_NAME:-ubb_perfeccionamiento}
+      DB_USER: ${DB_USER:-sa}
+      DB_PASSWORD: ${DB_PASSWORD:-UBB_SqlServer2017!}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ubb_net
+    restart: unless-stopped
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    container_name: ubb_db
+    ports:
+      - "${DB_EXTERNAL_PORT:-1433}:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${DB_PASSWORD:-UBB_SqlServer2017!}
+      MSSQL_PID: Express
+    volumes:
+      - ubb_db_data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          '/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${DB_PASSWORD:-UBB_SqlServer2017!}" -Q "SELECT 1" || exit 1',
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - ubb_net
+    restart: unless-stopped
+
+volumes:
+  ubb_db_data:
+    name: ubb_db_data
+
+networks:
+  ubb_net:
+    name: ubb_net
+    driver: bridge
